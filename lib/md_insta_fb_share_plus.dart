@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 enum ShareStatus {
   success, // 0
@@ -11,7 +12,7 @@ enum ShareStatus {
 }
 
 ShareStatus _convertResponseToStatus(num? status) {
-  switch(status) {
+  switch (status) {
     case 0:
       return ShareStatus.success;
     case 1:
@@ -26,33 +27,40 @@ ShareStatus _convertResponseToStatus(num? status) {
 }
 
 class MdInstaFbShare {
-
   MdInstaFbShare._();
 
-  static const MethodChannel _channel = MethodChannel('md_insta_fb_share');
+  static const MethodChannel _channel = MethodChannel('md_insta_fb_share_plus');
 
-  static Future<ShareStatus> shareInstaStory(String backgroundImagePath) async {
+  static Future<ShareStatus> shareInstaStory(
+      String backgroundImagePath,
+      String? externalUrl,
+      String? backgroundTopColor,
+      String? backgroundBottomColor) async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
     return _convertResponseToStatus(
-      await _channel.invokeMethod('share_insta_story', { "backgroundImage": backgroundImagePath })
-    );
+        await _channel.invokeMethod('share_insta_story', {
+      "backgroundImage": backgroundImagePath,
+      "externalUrl": externalUrl,
+      "sourceApplication": packageInfo.packageName,
+      "backgroundTopColor": backgroundTopColor,
+      "backgroundBottomColor": backgroundBottomColor
+    }));
   }
 
   static Future<ShareStatus> shareInstaFeed(String backgroundImagePath) async {
-    return _convertResponseToStatus(
-      await _channel.invokeMethod('share_insta_feed', { "backgroundImage": backgroundImagePath })
-    );
+    return _convertResponseToStatus(await _channel.invokeMethod(
+        'share_insta_feed', {"backgroundImage": backgroundImagePath}));
   }
 
   static Future<ShareStatus> shareFBStory(String backgroundImagePath) async {
-    return _convertResponseToStatus(
-      await _channel.invokeMethod('share_FB_story', { "backgroundImage": backgroundImagePath })
-    );
+    return _convertResponseToStatus(await _channel.invokeMethod(
+        'share_FB_story', {"backgroundImage": backgroundImagePath}));
   }
 
   static Future<ShareStatus> shareFBFeed(String backgroundImagePath) async {
-    return _convertResponseToStatus(
-        await _channel.invokeMethod('share_FB_feed', {"backgroundImage": backgroundImagePath })
-    );
+    return _convertResponseToStatus(await _channel.invokeMethod(
+        'share_FB_feed', {"backgroundImage": backgroundImagePath}));
   }
 
   static Future<bool> checkFBInstalled() async {

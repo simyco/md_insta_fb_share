@@ -7,7 +7,7 @@ let INSTAMarketURL = URL(string: "itms-apps://itunes.apple.com/us/app/apple-stor
 
 public class SwiftMdInstaFbSharePlugin: NSObject, FlutterPlugin, SharingDelegate {
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "md_insta_fb_share", binaryMessenger: registrar.messenger())
+    let channel = FlutterMethodChannel(name: "md_insta_fb_share_plus", binaryMessenger: registrar.messenger())
     let instance = SwiftMdInstaFbSharePlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
@@ -15,9 +15,15 @@ public class SwiftMdInstaFbSharePlugin: NSObject, FlutterPlugin, SharingDelegate
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
       if (call.method == "share_insta_story") {
           let args = (call.arguments as! NSDictionary)
-          let urlScheme = URL(string: "instagram-stories://share")!
+          let sourceApplication = args["sourceApplication"] as! String;
+          print(sourceApplication);
+          let urlScheme = URL(string: "instagram-stories://share?source_application="+sourceApplication)!
+          print(urlScheme);
           if (UIApplication.shared.canOpenURL(urlScheme)) {
               let backgroundImagePath = args["backgroundImage"] as! String;
+              let externalUrl = args["externalUrl"] as! String;
+              let backgroundTopColor = args["backgroundTopColor"] as! String;
+              let backgroundBottomColor = args["backgroundBottomColor"] as! String;
               
               var backgroundImage: UIImage? = nil;
               let fileManager = FileManager.default;
@@ -32,7 +38,10 @@ public class SwiftMdInstaFbSharePlugin: NSObject, FlutterPlugin, SharingDelegate
               }
               
               let pasteboardItems = [
-                "com.instagram.sharedSticker.backgroundImage" : (backgroundImage ?? nil) as Any
+                "com.instagram.sharedSticker.stickerImage" : (backgroundImage ?? nil) as Any,
+                "com.instagram.sharedSticker.contentURL" : (externalUrl ?? nil) as Any,
+                "com.instagram.sharedSticker.backgroundTopColor" : (backgroundTopColor ?? nil) as Any,
+                "com.instagram.sharedSticker.backgroundBottomColor" : (backgroundBottomColor ?? nil) as Any
               ] as [String : Any];
               
               if #available(iOS 10.0, *) {

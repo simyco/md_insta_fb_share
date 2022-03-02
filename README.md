@@ -1,3 +1,5 @@
+Based on https://github.com/YuriyLuchaninov/md_insta_fb_share
+
 # md_insta_fb_share
 A new Flutter plugin was created while using the framework to develop [cross-platform apps at MobiDev](https://mobidev.biz/services/cross-platform-app-development)
 
